@@ -1,190 +1,99 @@
-n, m = map(int, input().split())
+from collections import deque
+from sys import stdin
+input = stdin.readline
 
-def make_board():
-    board = []
+y, x = map(int, input().split())
+visit = [[[[False] * y for _ in range(x)] for _ in range(y)] for _ in range(x)]
+board = []
 
-    for _ in range(n):
-        board.append(list(input()))
+for row in range(y):
+    board.append(list(input()))    
 
-    return board
-
-
-def get_red_index(board):
-
-    for y_index in range(n):
-        for x_index in range(m):
-            if board[y_index][x_index] == 'R':
-                return [x_index, y_index]
-
-
-def get_blue_index(board):
-
-    for y_index in range(n):
-        for x_index in range(m):
-            if board[y_index][x_index] == 'B':
-                return [x_index, y_index]
-
-def get_hole_index(board):
-
-    for y_index in range(n):
-        for x_index in range(m):
-            if board[y_index][x_index] == 'O':
-                return [x_index, y_index]
+for row in range(y):
+    for column in range(x):
+        if board[row][column] == 'R':
+            red_x, red_y = column, row
+        elif board[row][column] == 'B':
+            blue_x, blue_y = column, row
+        elif board[row][column] == 'O':
+            hole_x, hole_y = column, row
 
 
-board = make_board()
-red_index = get_red_index(board)
-blue_index = get_blue_index(board)
-hole_index = get_hole_index(board)
+def move(ball_x, ball_y, dx, dy, count):
+    while board[ball_x + dx][ball_y + dy] != '#' and board[ball_x + dx][ball_y + dy] != 'O':
+        return move(ball_x + dx, ball_y + dy, dx, dy, count + 1)
+    return ball_x, ball_y, count
+
+dx = [0, 0, -1, 1]
+dy = [1, -1, 0, 0]
 
 
-def move_red(direction):
-    global red_index
-    direction_dict = {'up' : (-1, 0), 'down' : (1, 0), 'right' : (0, 1), 'left' : (0, -1)}
-    dy = direction_dict[direction][0]
-    dx = direction_dict[direction][1]
-    x, y = red_index
+def bfs(red_x, red_y, blue_x, blue_y, count):
+    bfs_stack = deque()
+    bfs_stack.append([red_x, red_y, blue_x, blue_y, count])
+    visit[red_x][red_y][blue_x][blue_y] = True
+    
+    while bfs_stack:
 
-    if board[y + dy][x + dx] == '#':
-        return False
-    elif board[y + dy][x + dx] == 'B':
-        return False
-    elif board[y + dy][x + dx] == '.':
-        board[y][x] = '.'
-        red_index = [x + dx, y + dy]
-        board[y + dy][x + dx] = 'R'
-        return True
-    else:
-        board[y][x] = '.'
-        red_index = [x + dx, y + dy]
-        return False
+        red_x, red_y, blue_x, blue_y, count = bfs_stack.popleft()
 
-
-def move_blue(direction):
-    global blue_index
-    direction_dict = {'up' : (-1, 0), 'down' : (1, 0), 'right' : (0, 1), 'left' : (0, -1)}
-    dy = direction_dict[direction][0]
-    dx = direction_dict[direction][1]
-    x, y = blue_index
-
-    if board[y + dy][x + dx] == '#':
-        return False
-    elif board[y + dy][x + dx] == 'R':
-        return False
-    elif board[y + dy][x + dx] == '.':
-        board[y][x] = '.'
-        blue_index = [x + dx, y + dy]
-        board[y + dy][x + dx] = 'B'
-        return True
-    else:
-        board[y][x] = '.'
-        blue_index = [x + dx, y + dy]
-        return False
-
-
-def tilt_board(direction):
-    global board
-
-    while True:
-        if red_index != hole_index:
-            red_bool = move_red(direction)
-        else:
-            red_bool = False
-
-        if blue_index != hole_index:
-            blue_bool = move_blue(direction)
-        else:
-            blue_bool = False
-        
-        if not(red_bool or blue_bool):
+        if count > 10:
             break
-    
-    return None
 
+        for i in range(4):
+            moved_red_x, moved_red_y, red_move_count = move(red_x, red_y, dx[i], dy[i], 0)
+            moved_blue_x, moved_blue_y, blue_move_count = move(blue_x, blue_y, dx[i], dy[i], 0)
 
-def find_path():
-    global red_index
-    direction_dict = {'up' : (-1, 0), 'down' : (1, 0), 'right' : (0, 1), 'left' : (0, -1)}
-    x, y = red_index
-    path = []
+            if board[moved_blue_x][moved_blue_y] != 'O':
+                if board[moved_red_x][moved_red_y] != 'O':
+                    print(count)
+                    return
+                if moved_blue_x == moved_red_x and moved_blue_y == moved_red_y:
+                    if red_move_count > blue_move_count:
+                        moved_red_x -= dx[i]
+                        moved_red_y -= dy[i]
+                    else:
+                        moved_blue_x -= dx[i]
+                        moved_blue_y -= dy[i]
 
-    for direction in direction_dict:
-        dy = direction_dict[direction][0]
-        dx = direction_dict[direction][1]
-
-        if board[y + dy][x + dx] == '.':
-            path.append(direction)
-        elif board[y + dy][x + dx] == 'B':
-            path.append(direction)
-
-    return path
-
-
-def isfinished():
-    if red_index == hole_index or blue_index == hole_index:
-        return True
-    else:
-        False
-
-
-def iswin():
-    if red_index == hole_index and blue_index == hole_index:
-        return False
-    elif blue_index == hole_index:
-        return False
-    elif red_index == hole_index:
-        return True
-
-
-def make_boardcopy(board):
-    temp_board = []
-    
-    for row in board:
-        temp_board.append(row[:])
-    
-    return temp_board
-
-count = 0
-min_count = 11
-path_stack = [[] for _ in range(10)]
-board_list = [0] * 10
-
-
-while True:
-    if count == 0 and min_count < 11:
-        print(min_count)
-        break
-    elif count == 0 and min_count == 11:
-        print(-1)
-        break
-
-    if path_stack[count] == []:
-        path_stack[count] = find_path()
-        continue
-    else:
-        if board_list[count] == 0:
-            board_list[count] = make_boardcopy(board)
+                if not visit[moved_red_x][moved_red_y][moved_blue_x][moved_blue_y]:
+                    visit[moved_red_x][moved_red_y][moved_blue_x][moved_blue_y] = True
+                    bfs_stack.append([moved_red_x, moved_red_y, moved_blue_x, moved_blue_y, count+1])
+                    print(bfs_stack)
         
-        tilt_board[path_stack[count][0]]
-        del path_stack[count][0]
+    print(-1)
 
-        
 
+
+    # if count > 10:
+    #     return -1
+
+    # if (red_x, red_y) == (hole_x, hole_y) and (blue_x, blue_y) != (hole_x, hole_y):
+    #     return count
+
+    # if len(bfs_stack) != 0:
+    #     if not(checker[red_x][red_y][blue_x][blue_y]):
     
+    # if not(checker[red_x][red_y][blue_x][blue_y]):
+    #     checker[red_x][red_y][blue_x][blue_y] = True
+
+    #     for i, j in zip(dx, dy):
+    #         moved_red_x, moved_red_y, red_move_count = move(red_x, red_y, i, j, 0)
+    #         moved_blue_x, moved_blue_y, blue_move_count = move(blue_x, blue_y, i, j, 0)
+
+    #         if (moved_red_x, moved_red_y) == (moved_blue_x, moved_blue_y):
+    #             if red_move_count > blue_move_count:
+    #                 moved_red_x -= i
+    #                 moved_red_y -= j
+    #             else:
+    #                 moved_blue_x -= i
+    #                 moved_blue_y -= j
+
+    #         bfs_stack.append([moved_red_x, moved_red_y, moved_blue_x, moved_blue_y])
 
 
-# while True:
-#     print('which direction you gonna move?')
-#     tilt_board(input())
-#     print(find_path())
-#     for _ in board:
-#         print(_)
-#     if red_index == hole_index or blue_index == hole_index:
-#         print('gone to the hole')
-    
+bfs(red_x, red_y, blue_x, blue_y, 1)
 
-        
 
-    
 
 
