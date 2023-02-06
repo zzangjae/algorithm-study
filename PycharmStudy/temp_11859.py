@@ -156,3 +156,5 @@ for iteration in range(T):
 
     print(f'#{iteration + 1} {result}')
     # print(kangaroo_val_lst)
+
+
