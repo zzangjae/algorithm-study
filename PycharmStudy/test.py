@@ -1,27 +1,29 @@
 import sys
 sys.stdin = open("input.txt", "r")
-
-t = int(input())
-
-
-def get_min_sum(checker, minimum=0, row=0):
-
-    if row == n:
-        return minimum
-
-    temp_stack = []
-
-    for idx in range(n):
-        if checker[idx] is True:
-            temp_checker = checker[:]
-            temp_checker[idx] = False
-            temp_stack.append(get_min_sum(temp_checker, minimum + num_lst[row][idx], row + 1))
-
-    return min(temp_stack)
-
-
-for iteration in range(t):
-    n = int(input())
-    num_lst = [list(map(int, input().split())) for _ in range(n)]
-
-    print(f'#{iteration + 1} {get_min_sum([True] * n)}')
+T = int(input())
+for test_case in range(1,T+1):
+    # max index min index
+    N = int(input())
+    arr = [list(map(str , input())) for _ in range(N)]
+    proof_lst = []
+    mx_0, mx_1, mn_0,mn_1, cnt = 0,0,20,20, 0
+    for i in range(N):
+        for j in range(N):
+            if arr[i][j] == '#':
+                if i > mx_0:
+                    mx_0 = i
+                if i < mn_0:
+                    mn_0 = i
+                if j > mx_1:
+                    mx_1 = j
+                if j < mn_1:
+                    mn_1 = j
+                cnt+=1
+    if mx_1 == mx_0 and mn_0 == mn_1:
+        if (mx_1-mn_1+1)*(mx_0-mn_0+1) == cnt:
+            result = 'yes'
+        else:
+            result = 'no'
+    else:
+        result = 'no'
+    print(f'#{test_case} {result}')
