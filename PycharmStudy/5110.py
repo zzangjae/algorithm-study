@@ -9,69 +9,73 @@ class LinkedList:
     def __init__(self, node):
         self.node = node
         self.next_node = None
+        self.top = None
 
-    def get(self, node):
+
+    def set_next_node(self, node):
         self.next_node = LinkedList(node)
 
-    def add(self, node_instance):
-        next_instance = self.next_node
-        self.next_node = node_instance
-
-        while node_instance.next_node is not None:
-            node_instance = node_instance.next_node
-
-        node_instance.next_node = next_instance
+    def change_next_node(self, node):
+        temp_next_node = self.next_node
+        self.next_node = LinkedList(node)
+        self.next_node.next_node = temp_next_node
 
 
-for iteration in range(t):
+for test_case in range(1, t + 1):
+    n, m, k = map(int, input().split())
+    num_lst = list(map(int, input().split()))
+    start_ll = LinkedList(num_lst[0])
+    temp_ll = start_ll
 
-    n, m = map(int, input().split())
-    num_lst = [list(map(int, input().split())) for _ in range(m)]
-    instance_lst = []
+    for num in num_lst[1:]:
 
-    for lst in num_lst:
-        temp_instance = LinkedList(lst[0])
-        instance_lst.append(temp_instance)
+        temp_ll.set_next_node(num)
+        temp_ll = temp_ll.next_node
 
-        for num in lst[1:]:
-            temp_instance.get(num)
-            temp_instance = temp_instance.next_node
+    temp_ll = start_ll
 
-    for instance in instance_lst[1:]:
+    while k > 0:
+        checker = m - 1
 
-        temp_instance = instance_lst[0]
+        while checker > 0:
+            if temp_ll.next_node is not None:
+                temp_ll = temp_ll.next_node
+                checker -= 1
+            else:
+                temp_ll = start_ll
+                checker -= 1
 
-        if temp_instance.node > instance.node:
-            instance_lst[0] = instance
-            while instance.next_node is not None:
-                instance = instance.next_node
-            instance.add(temp_instance)
-            continue
+        if temp_ll.next_node is not None:
+            temp_ll.change_next_node(temp_ll.node + temp_ll.next_node.start)
+            temp_ll = temp_ll.next_node
+        else:
+            temp_ll.change_next_node(temp_ll.node + start_ll.node)
+            temp_ll = temp_ll.next_node
 
-        while True:
-
-            if temp_instance.next_node is None:
-                temp_instance.add(instance)
-                break
-
-            if temp_instance.next_node.node > instance.node:
-                temp_instance.add(instance)
-                break
-
-            temp_instance = temp_instance.next_node
+        k -= 1
 
     result = []
-    temp_instance = instance_lst[0]
-    result.append(temp_instance.node)
+    temp_ll = start_ll
 
-    while True:
-        temp_instance = temp_instance.next_node
-        result.append(temp_instance.node)
-        if temp_instance.next_node is None:
-            break
+    while temp_ll.next_node is not None:
+        result.append(temp_ll.node)
+        temp_ll = temp_ll.next_node
+
+    result.append(temp_ll.node)
 
     if len(result) >= 10:
-        print(f'#{iteration + 1} {" ".join(map(str, result[-1: -11: -1]))}')
+        print(f'#{test_case} {" ".join(map(str, result[-1:-11:-1]))}')
     else:
-        print(f'#{iteration + 1} {" ".join(map(str, result[-1:: -1]))}')
+        print(f'#{test_case} {" ".join(map(str, result[-1::-1]))}')
+
+
+
+
+
+
+
+
+
+
+
 
