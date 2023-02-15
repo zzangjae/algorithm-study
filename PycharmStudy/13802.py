@@ -32,5 +32,3 @@ for _ in range(10):
                 check_lst[next_node] = 0
 
     print(f'#{test_case_num} {result}')
-
-
