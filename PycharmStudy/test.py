@@ -1,29 +1,27 @@
 import sys
 sys.stdin = open("input.txt", "r")
+
+def check(arr):
+    for i in range(n - 5 + 1):
+        for j in range(n - 5 + 1):
+            s = '' + arr[i][j] + arr[i+1][j+1] + arr[i+2][j+2] + arr[i+3][j+3] + arr[i+4][j+4]
+            if s == "o" * 5:
+                return True
+    else: return False
+
 T = int(input())
-for test_case in range(1,T+1):
-    # max index min index
-    N = int(input())
-    arr = [list(map(str , input())) for _ in range(N)]
-    proof_lst = []
-    mx_0, mx_1, mn_0,mn_1, cnt = 0,0,20,20, 0
-    for i in range(N):
-        for j in range(N):
-            if arr[i][j] == '#':
-                if i > mx_0:
-                    mx_0 = i
-                if i < mn_0:
-                    mn_0 = i
-                if j > mx_1:
-                    mx_1 = j
-                if j < mn_1:
-                    mn_1 = j
-                cnt+=1
-    if mx_1 == mx_0 and mn_0 == mn_1:
-        if (mx_1-mn_1+1)*(mx_0-mn_0+1) == cnt:
-            result = 'yes'
-        else:
-            result = 'no'
+for t in range(1, T + 1):
+    n = int(input())
+    arr = [''.join(input()) for _ in range(n)]
+    arr_ = [''.join(i) for i in zip(*arr)]
+    ans = "NO"
+
+    for s in arr + arr_:
+        if 'o' * 5 in s:
+            ans = "YES"
+            break
     else:
-        result = 'no'
-    print(f'#{test_case} {result}')
+        temp_arr = arr_[::-1]
+        if check(arr) or check(arr_[::-1]):
+            ans = "YES"
+    print(f"#{t} {ans}")

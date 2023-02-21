@@ -4,26 +4,24 @@ sys.stdin = open("input.txt", "r")
 t = int(input())
 
 
-def get_log2(x):
-    if x <= 1:
-        return 0
-    return 1 + get_log2(x//2)
+def dfs(idx):
+
+    global number
+
+    if idx <= n:
+
+        dfs(idx * 2)
+
+        tree[idx] = number
+        number += 1
+
+        dfs(idx * 2 + 1)
 
 
 for test_case_num in range(1, t + 1):
     n = int(input())
-    num_lst = list(range(1, n+1))
-    tree_lst = [0] * (n + 1)
-    last_child_idx = n
-    first_child_idx = get_log2(n) ** 2
+    tree = [0 for _ in range(n + 1)]
+    number = 1
+    dfs(1)
 
-    while first_child_idx >= 1:
-
-        tree_lst[first_child_idx : last_child_idx + 1] =\
-        num_lst[n - last_child_idx: n - first_child_idx + 1]
-
-        last_child_idx = first_child_idx - 1
-        first_child_idx = first_child_idx // 2
-
-    print(f'#{test_case_num} {tree_lst[1]} {tree_lst[int(n/2)]}')
-
+    print(f'#{test_case_num} {tree[1]} {tree[n//2]}')
