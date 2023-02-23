@@ -1,27 +1,47 @@
 import sys
-sys.stdin = open("input.txt", "r")
+sys.stdin = open('input.txt', 'r')
 
-def check(arr):
-    for i in range(n - 5 + 1):
-        for j in range(n - 5 + 1):
-            s = '' + arr[i][j] + arr[i+1][j+1] + arr[i+2][j+2] + arr[i+3][j+3] + arr[i+4][j+4]
-            if s == "o" * 5:
-                return True
-    else: return False
+N = int(sys.stdin.readline())
 
-T = int(input())
-for t in range(1, T + 1):
-    n = int(input())
-    arr = [''.join(input()) for _ in range(n)]
-    arr_ = [''.join(i) for i in zip(*arr)]
-    ans = "NO"
+temp_k = []
+temp_v = []
 
-    for s in arr + arr_:
-        if 'o' * 5 in s:
-            ans = "YES"
+for _ in range(N):
+    L, H = map(int, sys.stdin.readline().split())
+    temp_k.append(L)
+    temp_v.append(H)
+
+garage = sorted(dict(zip(temp_k, temp_v)).items())
+
+if garage[0][1] > garage[-1][1]:
+    garage = garage[::-1]
+
+for t in range(len(garage)):
+    garage[t] = list(garage[t])
+
+top = [0, 0]
+for i in range(len(garage)):
+    if top[1] < garage[i][1]:
+        top = garage[i]
+
+count = 0
+while True:
+    if garage[0][1] == top[1]:
+        garage = garage[::-1]
+        if garage[0][1] == garage[-1][1]:
+            count += (abs(garage[0][0] - garage[-1][0]) + 1) * garage[0][1]
             break
-    else:
-        temp_arr = arr_[::-1]
-        if check(arr) or check(arr_[::-1]):
-            ans = "YES"
-    print(f"#{t} {ans}")
+    count += (abs(garage[0][0] - garage[-1][0]) + 1) * garage[0][1]
+    minus = garage.pop(0)[1]
+    for j in range(len(garage)):
+        garage[j][1] -= minus
+
+    while True:
+        for k in range(len(garage)):
+            if garage[k][1] <= 0:
+                garage.pop(k)
+                break
+        else:
+            break
+
+print(count)
