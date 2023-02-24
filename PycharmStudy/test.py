@@ -1,47 +1,45 @@
 import sys
-sys.stdin = open('input.txt', 'r')
+sys.stdin = open("input.txt", "r")
+t = int(input())
 
-N = int(sys.stdin.readline())
 
-temp_k = []
-temp_v = []
+def get_answer(lst):
+    temp_lst = num_lst[:]
 
-for _ in range(N):
-    L, H = map(int, sys.stdin.readline().split())
-    temp_k.append(L)
-    temp_v.append(H)
+    for idx in range(len(temp_lst)):
 
-garage = sorted(dict(zip(temp_k, temp_v)).items())
+        if temp_lst[idx] != lst[idx]:
 
-if garage[0][1] > garage[-1][1]:
-    garage = garage[::-1]
+            for temp_idx in range(len(temp_lst) - 1, -1, -1):
+                if temp_lst[temp_idx] == lst[idx]:
+                    temp_lst[idx], temp_lst[temp_idx] = temp_lst[temp_idx], temp_lst[idx]
+                    break
 
-for t in range(len(garage)):
-    garage[t] = list(garage[t])
-
-top = [0, 0]
-for i in range(len(garage)):
-    if top[1] < garage[i][1]:
-        top = garage[i]
-
-count = 0
-while True:
-    if garage[0][1] == top[1]:
-        garage = garage[::-1]
-        if garage[0][1] == garage[-1][1]:
-            count += (abs(garage[0][0] - garage[-1][0]) + 1) * garage[0][1]
-            break
-    count += (abs(garage[0][0] - garage[-1][0]) + 1) * garage[0][1]
-    minus = garage.pop(0)[1]
-    for j in range(len(garage)):
-        garage[j][1] -= minus
-
-    while True:
-        for k in range(len(garage)):
-            if garage[k][1] <= 0:
-                garage.pop(k)
-                break
-        else:
+            else:
+                continue
             break
 
-print(count)
+    return temp_lst
+
+
+for test_case_num in range(1, t + 1):
+    num_lst = list(map(int, list(input())))
+    sorted_lst = num_lst[:]
+    sorted_lst.sort()
+    rev_sorted_lst = num_lst[:]
+    rev_sorted_lst.sort(reverse=True)
+
+    if not (num_lst.count(0) == len(num_lst)):
+
+        counter = 0
+
+        while sorted_lst[0] == 0:
+            sorted_lst.pop(0)
+            counter += 1
+
+        for _ in range(counter):
+            sorted_lst.insert(1, 0)
+
+    print(f'#{test_case_num} {"".join(map(str, get_answer(sorted_lst)))} {"".join(map(str, get_answer(rev_sorted_lst)))}')
+
+
