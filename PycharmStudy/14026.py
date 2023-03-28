@@ -108,10 +108,9 @@ for tc_num in range(1, t+1):
     for row in row_set:
         secret_code += (get_code_from_row(row))
 
+    secret_code = list(map(lambda x: ''.join(map(str, x)), secret_code))
     secret_code = set(secret_code)
 
-    # print(code_set)
-    #
     # for code in code_set:
     #     binary_code.append(get_binary_code(code))
     #
@@ -119,7 +118,7 @@ for tc_num in range(1, t+1):
     #     secret_code.append(get_secret_code(code))
     #
     for code in secret_code:
-        result.append(check_secret_code(code))
+        result.append(check_secret_code(list(map(int, list(code)))))
 
     print(f'#{tc_num} {sum(result)}')
 
