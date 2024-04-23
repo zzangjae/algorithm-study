@@ -12,12 +12,18 @@ public class Main {
         String input = br.readLine();
 
         long result = 0;
-        int num;
+        long num;
+        long r;
 
         for (int i=0; i<input.length(); i++) {
             num = (int) input.charAt(i) - (int) 'a' + 1;
-            result += (long) (num * Math.pow(R, i));
-            result = result % M;
+
+            r = 1;
+            for (int j=0; j<i; j++) {
+                r = (r * 31) % M;
+            }
+
+            result = (result + num * r) % M;
         }
 
         System.out.println(result);
