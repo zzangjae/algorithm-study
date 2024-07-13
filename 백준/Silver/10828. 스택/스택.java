@@ -7,23 +7,33 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
 
-        Stack<Integer> stack = new Stack<>();
+        Deque<Integer> stack = new ArrayDeque<>();
 
         StringTokenizer st;
         StringBuilder sb = new StringBuilder();
         for (int i=0; i<n; i++) {
             st = new StringTokenizer(br.readLine());
-            String tempStr = st.nextToken();
+            String command = st.nextToken();
 
-            if (tempStr.equals("push")) {stack.push(Integer.parseInt(st.nextToken())); continue;}
-            if (tempStr.equals("top")) sb.append(stack.empty() ? -1 : stack.peek());
-            if (tempStr.equals("size")) sb.append(stack.size());
-            if (tempStr.equals("empty")) sb.append(stack.empty() ? 1 : 0);
-            if (tempStr.equals("pop")) sb.append(stack.empty() ? -1 : stack.pop());
-
-            sb.append("\n");
+            switch (command) {
+                case "push":
+                    stack.push(Integer.parseInt(st.nextToken()));
+                    break;
+                case "pop":
+                    sb.append(stack.isEmpty() ? -1 : stack.pop()).append("\n");
+                    break;
+                case "size":
+                    sb.append(stack.size()).append("\n");
+                    break;
+                case "empty":
+                    sb.append(stack.isEmpty() ? 1 : 0).append("\n");
+                    break;
+                case "top":
+                    sb.append(stack.isEmpty() ? -1 : stack.peek()).append("\n");
+                    break;
+            }
         }
 
-        System.out.println(sb.toString());
+        System.out.print(sb);
     }
 }
