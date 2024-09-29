@@ -16,16 +16,16 @@ public class Main {
         StringTokenizer st;
 
         int t = Integer.parseInt(br.readLine());
-
+        StringBuilder sb = new StringBuilder();
         for (int i=0; i<t; i++) {
-            String result = "";
+            
             Map<Integer,Integer> map = new HashMap<>();
 
             st = new StringTokenizer(br.readLine());
             int num = Integer.parseInt(st.nextToken());
             int den = Integer.parseInt(st.nextToken());
 
-            result += num / den + ".";
+            sb.append(num / den + ".");
             num = num % den * 10;
             int idx = 0;
             String decimal = "";
@@ -36,10 +36,10 @@ public class Main {
                 num = num % den * 10;
             }
 
-            result += decimal.substring(0, map.get(num));
-            result += "(" + decimal.substring(map.get(num), idx) + ")";
-
-            System.out.println(result);
+            sb.append(decimal.substring(0, map.get(num)));
+            sb.append("(" + decimal.substring(map.get(num), idx) + ")").append("\n");
         }
+
+        System.out.println(sb);
     }
 }
